@@ -4,7 +4,7 @@
 
 Proyecto práctico para diseñar, desplegar, administrar y validar la infraestructura informática de **Nexora Solutions**, una empresa ficticia de servicios tecnológicos. El escenario representa cinco departamentos y 60 empleados; el laboratorio utiliza un número reducido de máquinas virtuales para reproducir sus servicios de infraestructura.
 
-> **Estado del repositorio:** documentación y scripts de ejemplo publicados; archivo fotográfico clasificado, **capturas PNG pendientes de carga al repositorio remoto**. Este README diferencia las pruebas documentadas de las ampliaciones previstas. Sistemas heredados para fines educativos; no es una arquitectura recomendada para producción.
+> **Estado del repositorio:** documentación publicada, 101 capturas PNG incorporadas y enlazadas desde las guías de fase, y scripts de ejemplo identificados como tales. Este README diferencia las pruebas documentadas de las ampliaciones previstas. Sistemas heredados para fines educativos; no es una arquitectura recomendada para producción.
 
 ## Arquitectura
 
@@ -39,7 +39,7 @@ Proyecto práctico para diseñar, desplegar, administrar y validar la infraestru
 - Evidencias clasificadas de servidor DHCP autorizado, unión de cliente Windows 10, GPO de bloqueo de sesión a 600 segundos y restricciones a usuarios de Desarrollo.
 - Casos documentados de permisos permitidos y denegados entre carpetas departamentales.
 
-Los procedimientos incluyen comandos de verificación; **las evidencias por pantalla no sustituyen las pruebas funcionales**. El material fotográfico y el inventario están preparados, pero aún no publicados aquí.
+Los procedimientos incluyen comandos de verificación y capturas insertadas en el paso que documentan. **Las evidencias por pantalla no sustituyen las pruebas funcionales**.
 
 ## Incidencias y recuperación
 
@@ -62,6 +62,6 @@ Los archivos en [`scripts/powershell/`](scripts/powershell/README.md) incluyen *
 - Solo hay un controlador de dominio: **no existe alta disponibilidad**.
 - Windows Server 2016 y Windows 10 Enterprise convencional son plataformas heredadas; las prácticas son educativas y no deben trasladarse sin rediseño a una empresa real.
 
-## Pendiente de publicación
+## Alcance de la documentación
 
-Cargar las **101 capturas clasificadas** que acompañan a esta documentación. El inventario y la estructura están preparados para preservar trazabilidad de las pruebas.
+Las 101 capturas originales están publicadas en `screenshots/`. Las guías de cada fase incluyen una secuencia visual contextualizada. Las 14 imágenes de incidencias se consultan desde sus respectivos informes. Los scripts `.ps1` son ejemplos didácticos, no transcripciones de los ejecutados originalmente.
