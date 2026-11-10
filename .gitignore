@@ -1,0 +1,21 @@
+# Nunca incluir máquinas virtuales, discos ni instantáneas
+*.vdi
+*.vmdk
+*.vhd
+*.vhdx
+*.ova
+*.ovf
+*.vbox
+*.vbox-prev
+*.sav
+*.iso
+
+# Secretos y datos locales
+.env
+.env.*
+*.pfx
+*.p12
+*.key
+*.kdbx
+secrets/
+credentials/
