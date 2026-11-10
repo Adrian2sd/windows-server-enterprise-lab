@@ -2,7 +2,7 @@
 
 Las 104 capturas originales se recibieron en el archivo `capturas.zip`. Se preparó una selección clasificada de **101 PNG**: 87 evidencias principales y 14 imágenes de diagnóstico/incidencias. Tres capturas quedaron en reserva o se descartaron como duplicadas.
 
-**Estado en GitHub:** este inventario documenta archivos organizados para su incorporación; **los PNG no están cargados todavía en el repositorio remoto**. El paquete local completo puede subirse conservando el árbol `screenshots/`.
+**Estado en GitHub:** las **101 capturas PNG están publicadas** en `screenshots/`. Las imágenes de cada fase se enlazan desde sus documentos y las de diagnóstico desde las incidencias.
 
 | Directorio | Imágenes preparadas | Alcance |
 |---|---:|---|
@@ -39,4 +39,4 @@ Las 104 capturas originales se recibieron en el archivo `capturas.zip`. Se prepa
 - [Validación](10-validacion/README.md)
 - [Incidencias](troubleshooting/001-icmp-firewall.md)
 
-> Este inventario es un control editorial, no una certificación de que todas las pruebas estén validadas en un entorno productivo.
+> Este inventario facilita la revisión de las evidencias; no es una certificación de que todas las pruebas estén validadas en un entorno productivo.
