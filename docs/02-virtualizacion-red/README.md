@@ -80,3 +80,57 @@ Se han separado seis capturas para publicar en `screenshots/02-virtualizacion-re
 - Aislamiento por topología de red virtual y ausencia de salida directa.
 - Diagnóstico de tráfico ICMP bloqueado sin apagar el firewall.
 - Importancia de conservar evidencias del fallo y de la solución.
+
+---
+
+## Guía visual vinculada a las capturas
+
+Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+
+### 1. Instalación de DC01
+
+Se presenta el servidor con Windows Server 2016 instalado y su consola de administración.
+
+![Instalación de DC01](../../screenshots/02-virtualizacion-red/02-03-dc01-windows-server-instalado.png)
+
+### 2. IP fija de DC01
+
+Se revisa la dirección 10.20.30.10 y el servidor DNS interno previsto.
+
+![IP fija de DC01](../../screenshots/02-virtualizacion-red/02-04-dc01-ip-estatica.png)
+
+### 3. Instalación de SRV01
+
+Se incorpora el segundo Windows Server, separado del controlador de dominio.
+
+![Instalación de SRV01](../../screenshots/02-virtualizacion-red/02-05-srv01-instalado.png)
+
+### 4. IP fija de SRV01
+
+Se comprueba 10.20.30.20 y la pertenencia a la red 10.20.30.0/24.
+
+![IP fija de SRV01](../../screenshots/02-virtualizacion-red/02-06-srv01-ip-estatica.png)
+
+### 5. Regla de firewall ICMP
+
+Tras fallar la comunicación, se permite ICMPv4 desde la subred del laboratorio sin desactivar el firewall.
+
+![Regla de firewall ICMP](../../screenshots/02-virtualizacion-red/02-08-regla-firewall-icmp.png)
+
+### 6. Conectividad entre servidores
+
+Se repite la prueba en ambos sentidos y se documenta la respuesta satisfactoria.
+
+![Conectividad entre servidores](../../screenshots/02-virtualizacion-red/02-09-conectividad-dc01-srv01.png)
+
+### 7. Rutas internas
+
+Se inspecciona el enrutamiento IPv4, que complementa la prueba de aislamiento.
+
+![Rutas internas](../../screenshots/02-virtualizacion-red/02-10-rutas-red-interna.png)
+
+### 8. Instantánea de SRV01
+
+Se conserva un punto de recuperación antes de instalar nuevos roles.
+
+![Instantánea de SRV01](../../screenshots/02-virtualizacion-red/02-11-srv01-snapshot.png)
