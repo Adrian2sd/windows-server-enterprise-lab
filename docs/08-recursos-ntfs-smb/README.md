@@ -36,84 +36,200 @@ No basta con que una carpeta sea visible a través de SMB: el acceso efectivo re
 
 ---
 
-## Guía visual vinculada a las capturas
+## Guía práctica ilustrada
 
-Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+Cada paso combina **acción**, **justificación** y **comprobación**. Las capturas se presentan junto a su explicación: las pruebas de mayor valor quedan visibles y los pasos preparatorios pueden desplegarse al pulsar «Ver captura».
 
-### 1. Carpetas departamentales
+## Diseño de carpetas y grupos de autorización
 
-Se estructura el almacenamiento de documentos en SRV01.
+### Paso 1 — Carpetas departamentales
+
+**Qué hicimos.** Creamos carpetas por departamento en el servidor de archivos.
+
+**Por qué.** Una estructura previsible facilita la gestión de la información y la revisión de accesos.
+
+**Cómo lo verificamos.** Identificar carpeta raíz y departamentos configurados.
+
+<details>
+<summary>📷 Ver evidencia — Carpetas departamentales</summary>
 
 ![Carpetas departamentales](../../screenshots/08-permisos-ntfs-smb/08-01-carpetas-departamentales.png)
 
-### 2. Grupo local de dominio
+</details>
 
-Se separa pertenencia departamental de los permisos sobre recursos.
+### Paso 2 — Grupo local de dominio
+
+**Qué hicimos.** Creamos grupos de seguridad locales de dominio para asignar permisos.
+
+**Por qué.** El modelo AGDLP separa el rol del usuario de la autorización sobre un recurso.
+
+**Cómo lo verificamos.** No asignar permisos directamente a usuarios individuales salvo excepciones justificadas.
+
+<details>
+<summary>📷 Ver evidencia — Grupo local de dominio</summary>
 
 ![Grupo local de dominio](../../screenshots/08-permisos-ntfs-smb/08-02-grupo-local-dominio.png)
 
-### 3. Grupos para permisos
+</details>
 
-Se preparan identidades de autorización para carpetas.
+### Paso 3 — Grupos para permisos
+
+**Qué hicimos.** Creamos grupos de permisos con nombres consistentes.
+
+**Por qué.** La nomenclatura debe permitir reconocer recurso y nivel de acceso.
+
+**Cómo lo verificamos.** Diferenciar permisos de lectura y modificación cuando existan.
+
+<details>
+<summary>📷 Ver evidencia — Grupos para permisos</summary>
 
 ![Grupos para permisos](../../screenshots/08-permisos-ntfs-smb/08-03-grupos-permisos-departamentales.png)
 
-### 4. Relación AGDLP
+</details>
 
-Se vincula el grupo global de Desarrollo con un grupo local de permisos.
+### Paso 4 — Relación AGDLP
+
+**Qué hicimos.** Introducimos GG_Desarrollo en el grupo local de dominio correspondiente.
+
+**Por qué.** La secuencia cuenta → grupo global → grupo local → permiso facilita altas y traslados.
+
+**Cómo lo verificamos.** Comprobar membresía del grupo local.
 
 ![Relación AGDLP](../../screenshots/08-permisos-ntfs-smb/08-04-agdlp-desarrollo.png)
 
-### 5. Verificación AGDLP
+### Paso 5 — Verificación AGDLP
 
-Se comprueba la pertenencia entre grupos.
+**Qué hicimos.** Verificamos que la relación entre grupos refleja el diseño.
+
+**Por qué.** Las pertenencias erróneas producen accesos excesivos o denegaciones inesperadas.
+
+**Cómo lo verificamos.** Inspeccionar Members y Member Of en ADUC o PowerShell.
+
+<details>
+<summary>📷 Ver evidencia — Verificación AGDLP</summary>
 
 ![Verificación AGDLP](../../screenshots/08-permisos-ntfs-smb/08-05-verificacion-grupos-agdlp.png)
 
-### 6. Herencia NTFS
+</details>
 
-Se revisan las opciones de herencia del directorio Desarrollo.
+## Configuración de permisos
+
+### Paso 6 — Herencia NTFS
+
+**Qué hicimos.** Revisamos la herencia de ACL NTFS sobre Desarrollo.
+
+**Por qué.** La herencia puede transmitir permisos no deseados desde el directorio padre.
+
+**Cómo lo verificamos.** Justificar qué entradas se conservan y cuáles se deshabilitan.
+
+<details>
+<summary>📷 Ver evidencia — Herencia NTFS</summary>
 
 ![Herencia NTFS](../../screenshots/08-permisos-ntfs-smb/08-06-herencia-ntfs-desarrollo.png)
 
-### 7. Permisos NTFS
+</details>
 
-Se aplica la autorización correspondiente a la carpeta.
+### Paso 7 — Permisos NTFS
+
+**Qué hicimos.** Configuramos permisos NTFS sobre la carpeta Desarrollo.
+
+**Por qué.** NTFS aplica el control de acceso sobre el sistema de archivos, incluso por acceso local.
+
+**Cómo lo verificamos.** Identificar los grupos y derechos efectivos sin asumir que el nombre del grupo garantiza el permiso.
+
+<details>
+<summary>📷 Ver evidencia — Permisos NTFS</summary>
 
 ![Permisos NTFS](../../screenshots/08-permisos-ntfs-smb/08-07-permisos-ntfs-desarrollo.png)
 
-### 8. Permisos SMB
+</details>
 
-Se comprueba la configuración del recurso compartido.
+### Paso 8 — Permisos SMB
+
+**Qué hicimos.** Revisamos los permisos del recurso compartido SMB.
+
+**Por qué.** El acceso remoto está sujeto a permisos SMB y NTFS; prevalece la combinación más restrictiva.
+
+**Cómo lo verificamos.** Comprobar también que no se abre el acceso a Everyone de forma no prevista.
+
+<details>
+<summary>📷 Ver evidencia — Permisos SMB</summary>
 
 ![Permisos SMB](../../screenshots/08-permisos-ntfs-smb/08-09-permisos-smb-departamentos.png)
 
-### 9. Permisos de la raíz
+</details>
 
-Se analiza el acceso al directorio compartido principal.
+### Paso 9 — Permisos de la raíz
+
+**Qué hicimos.** Inspeccionamos la ACL de la raíz compartida.
+
+**Por qué.** La raíz debe permitir atravesar la estructura según el diseño sin conceder escritura indiscriminada.
+
+**Cómo lo verificamos.** Validar los permisos mínimos necesarios.
+
+<details>
+<summary>📷 Ver evidencia — Permisos de la raíz</summary>
 
 ![Permisos de la raíz](../../screenshots/08-permisos-ntfs-smb/08-10-permisos-raiz-departamentos.png)
 
-### 10. Acceso autorizado
+</details>
 
-Se verifica que Desarrollo puede acceder a su carpeta.
+### Paso 10 — Acceso autorizado
+
+**Qué hicimos.** Comprobamos la entrada al recurso desde un usuario autorizado de Desarrollo.
+
+**Por qué.** El acceso permitido prueba una parte de la matriz, pero no confirma escritura.
+
+**Cómo lo verificamos.** Identificar la cuenta con la que se realiza la prueba.
+
+<details>
+<summary>📷 Ver evidencia — Acceso autorizado</summary>
 
 ![Acceso autorizado](../../screenshots/08-permisos-ntfs-smb/08-11-acceso-desarrollo-permitido.png)
 
-### 11. Escritura autorizada
+</details>
 
-Se realiza una prueba de modificación de contenido.
+## Pruebas positivas y negativas
+
+### Paso 11 — Escritura autorizada
+
+**Qué hicimos.** Creamos o modificamos un archivo dentro de Desarrollo con una identidad autorizada.
+
+**Por qué.** La escritura es una prueba distinta de listar y abrir carpetas.
+
+**Cómo lo verificamos.** Verificar que el archivo realmente puede guardarse.
 
 ![Escritura autorizada](../../screenshots/08-permisos-ntfs-smb/08-12-escritura-desarrollo-permitida.png)
 
-### 12. Acceso denegado
+### Paso 12 — Acceso denegado
 
-Se documenta que una identidad sin permiso no accede a Finanzas.
+**Qué hicimos.** Probamos una identidad sin permisos sobre Finanzas y observamos la denegación.
+
+**Por qué.** Los controles de acceso deben superar pruebas negativas, no solo positivas.
+
+**Cómo lo verificamos.** Documentar claramente usuario, recurso solicitado y mensaje de denegación.
 
 ![Acceso denegado](../../screenshots/08-permisos-ntfs-smb/08-13-acceso-finanzas-denegado.png)
 
-### 13. Protección de la raíz
+### Paso 13 — Protección de la raíz
 
-Se revisa el endurecimiento del directorio principal.
+**Qué hicimos.** Revisamos la protección del directorio compartido principal.
+
+**Por qué.** Las ACL de la raíz condicionan accesos y herencia del resto de departamentos.
+
+**Cómo lo verificamos.** Comprobar que el endurecimiento no impide el acceso legítimo a recursos hijos.
+
+<details>
+<summary>📷 Ver evidencia — Protección de la raíz</summary>
 
 ![Protección de la raíz](../../screenshots/08-permisos-ntfs-smb/08-13-proteccion-carpeta-principal.png)
+
+</details>
+
+---
+
+### Resultado y límites de la fase
+
+**Interpretación:** la captura acredita el paso indicado en el entorno de laboratorio. La validez del servicio completo requiere además las verificaciones descritas en esta fase.
+
+[↑ Volver a la portada](../../README.md) · [Consultar el inventario de evidencias](../evidencias.md)

@@ -61,21 +61,6 @@ New-NetFirewallRule `
 
 **Resultado:** la comunicación entre `DC01` y `SRV01` funcionó en ambos sentidos.
 
-## Evidencias seleccionadas
-
-Las ocho capturas de la fase están publicadas en `screenshots/02-virtualizacion-red/` y aparecen integradas más abajo en esta guía, en el paso que documentan.
-
-| Nombre de archivo | Qué acredita |
-|---|---|
-| `02-03-dc01-windows-server-instalado.png` | Instalación y Server Manager de DC01 |
-| `02-04-dc01-ip-estatica.png` | Dirección fija y DNS en DC01 |
-| `02-06-srv01-ip-estatica.png` | Dirección fija y DNS en SRV01 |
-| `02-08-regla-firewall-icmp.png` | Ajuste limitado de ICMP en ambos servidores |
-| `02-09-conectividad-dc01-srv01.png` | Ping bidireccional correcto |
-| `02-10-rutas-red-interna.png` | Comprobación de rutas IPv4 |
-| `02-05-srv01-instalado.png` | Instalación de SRV01 |
-| `02-11-srv01-snapshot.png` | Instantánea de seguridad de SRV01 |
-
 ## Aprendizajes
 
 - Diferencia entre configuración IP y conectividad efectiva.
@@ -85,54 +70,128 @@ Las ocho capturas de la fase están publicadas en `screenshots/02-virtualizacion
 
 ---
 
-## Guía visual vinculada a las capturas
+## Guía práctica ilustrada
 
-Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+Cada paso combina **acción**, **justificación** y **comprobación**. Las capturas se presentan junto a su explicación: las pruebas de mayor valor quedan visibles y los pasos preparatorios pueden desplegarse al pulsar «Ver captura».
 
-### 1. Instalación de DC01
+## Preparación de los dos servidores
 
-Se presenta el servidor con Windows Server 2016 instalado y su consola de administración.
+### Paso 1 — Instalación de DC01
+
+**Qué hicimos.** Instalamos Windows Server 2016 Standard con entorno gráfico en DC01 y verificamos el nombre del equipo.
+
+**Por qué.** Separar el controlador de dominio desde el principio simplifica la administración y el diagnóstico.
+
+**Cómo lo verificamos.** Comprobar que Server Manager corresponde a DC01.
+
+<details>
+<summary>📷 Ver evidencia — Instalación de DC01</summary>
 
 ![Instalación de DC01](../../screenshots/02-virtualizacion-red/02-03-dc01-windows-server-instalado.png)
 
-### 2. IP fija de DC01
+</details>
 
-Se revisa la dirección 10.20.30.10 y el servidor DNS interno previsto.
+### Paso 2 — IP fija de DC01
+
+**Qué hicimos.** Asignamos 10.20.30.10/24 a la interfaz interna, sin gateway, y apuntamos DNS al propio DC01.
+
+**Por qué.** Las direcciones estáticas evitan que el servidor de directorio cambie de localización.
+
+**Cómo lo verificamos.** Revisar IP, máscara y DNS en la consola.
+
+<details>
+<summary>📷 Ver evidencia — IP fija de DC01</summary>
 
 ![IP fija de DC01](../../screenshots/02-virtualizacion-red/02-04-dc01-ip-estatica.png)
 
-### 3. Instalación de SRV01
+</details>
 
-Se incorpora el segundo Windows Server, separado del controlador de dominio.
+### Paso 3 — Instalación de SRV01
+
+**Qué hicimos.** Instalamos SRV01 como segundo servidor independiente dentro de VirtualBox.
+
+**Por qué.** Los servicios DHCP y de archivos se alojarán fuera del controlador de dominio.
+
+**Cómo lo verificamos.** Comprobar que la instalación termina sin errores.
+
+<details>
+<summary>📷 Ver evidencia — Instalación de SRV01</summary>
 
 ![Instalación de SRV01](../../screenshots/02-virtualizacion-red/02-05-srv01-instalado.png)
 
-### 4. IP fija de SRV01
+</details>
 
-Se comprueba 10.20.30.20 y la pertenencia a la red 10.20.30.0/24.
+### Paso 4 — IP fija de SRV01
+
+**Qué hicimos.** Asignamos 10.20.30.20/24 y como DNS 10.20.30.10.
+
+**Por qué.** El servidor miembro debe consultar el DNS de Active Directory, no un resolutor público.
+
+**Cómo lo verificamos.** Las dos IP deben pertenecer a la subred 10.20.30.0/24.
 
 ![IP fija de SRV01](../../screenshots/02-virtualizacion-red/02-06-srv01-ip-estatica.png)
 
-### 5. Regla de firewall ICMP
+## Diagnóstico de conectividad y recuperación
 
-Tras fallar la comunicación, se permite ICMPv4 desde la subred del laboratorio sin desactivar el firewall.
+### Paso 5 — Regla de firewall ICMP
+
+**Qué hicimos.** Al fallar las primeras pruebas ICMP, creamos una regla de entrada para echo request (tipo 8) con origen limitado a 10.20.30.0/24.
+
+**Por qué.** Un ping fallido puede deberse al firewall del host aunque la capa de red funcione; no es necesario desactivarlo.
+
+**Cómo lo verificamos.** Confirmar que el ámbito de origen de la regla es la red del laboratorio.
+
+<details>
+<summary>📷 Ver evidencia — Regla de firewall ICMP</summary>
 
 ![Regla de firewall ICMP](../../screenshots/02-virtualizacion-red/02-08-regla-firewall-icmp.png)
 
-### 6. Conectividad entre servidores
+</details>
 
-Se repite la prueba en ambos sentidos y se documenta la respuesta satisfactoria.
+### Paso 6 — Conectividad entre servidores
+
+**Qué hicimos.** Repetimos Test-NetConnection en ambos sentidos tras ajustar el firewall.
+
+**Por qué.** La corrección se valida repitiendo exactamente la prueba que falló.
+
+**Cómo lo verificamos.** Buscar PingSucceeded: True en DC01 hacia SRV01 y viceversa.
 
 ![Conectividad entre servidores](../../screenshots/02-virtualizacion-red/02-09-conectividad-dc01-srv01.png)
 
-### 7. Rutas internas
+### Paso 7 — Rutas internas
 
-Se inspecciona el enrutamiento IPv4, que complementa la prueba de aislamiento.
+**Qué hicimos.** Inspeccionamos route print -4 para conocer las rutas presentes en la VM.
+
+**Por qué.** Una prueba ICMP entre equipos no prueba por sí sola que el laboratorio esté aislado del anfitrión.
+
+**Cómo lo verificamos.** Comprobar también que VirtualBox usa Red interna, sin un adaptador puente inesperado.
+
+<details>
+<summary>📷 Ver evidencia — Rutas internas</summary>
 
 ![Rutas internas](../../screenshots/02-virtualizacion-red/02-10-rutas-red-interna.png)
 
-### 8. Instantánea de SRV01
+</details>
 
-Se conserva un punto de recuperación antes de instalar nuevos roles.
+### Paso 8 — Instantánea de SRV01
+
+**Qué hicimos.** Creamos una instantánea de SRV01 antes de instalar nuevos roles.
+
+**Por qué.** Las instantáneas permiten regresar a un estado estable tras errores de configuración.
+
+**Cómo lo verificamos.** Identificar la instantánea y su punto del despliegue.
+
+<details>
+<summary>📷 Ver evidencia — Instantánea de SRV01</summary>
 
 ![Instantánea de SRV01](../../screenshots/02-virtualizacion-red/02-11-srv01-snapshot.png)
+
+</details>
+
+---
+
+### Resultado y límites de la fase
+
+**Interpretación:** la captura acredita el paso indicado en el entorno de laboratorio. La validez del servicio completo requiere además las verificaciones descritas en esta fase.
+
+[↑ Volver a la portada](../../README.md) · [Consultar el inventario de evidencias](../evidencias.md)

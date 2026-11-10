@@ -43,72 +43,170 @@ Existe evidencia de un error SID durante la unión de SRV01 y de su posterior in
 
 ---
 
-## Guía visual vinculada a las capturas
+## Guía práctica ilustrada
 
-Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+Cada paso combina **acción**, **justificación** y **comprobación**. Las capturas se presentan junto a su explicación: las pruebas de mayor valor quedan visibles y los pasos preparatorios pueden desplegarse al pulsar «Ver captura».
 
-### 1. Resolución DNS del servidor miembro
+## Incorporación del servidor al dominio
 
-Antes de unir SRV01, se comprueba que localiza los servicios del dominio.
+### Paso 1 — Resolución DNS del servidor miembro
+
+**Qué hicimos.** Probamos la resolución DNS desde SRV01 apuntando al DNS interno.
+
+**Por qué.** La unión al dominio depende de la resolución de servicios AD.
+
+**Cómo lo verificamos.** Comprobar que SRV01 resuelve el dominio y DC01.
+
+<details>
+<summary>📷 Ver evidencia — Resolución DNS del servidor miembro</summary>
 
 ![Resolución DNS del servidor miembro](../../screenshots/05-dhcp-servidor-miembro/05-01-srv01-resolucion-dns.png)
 
-### 2. SRV01 unido a dominio
+</details>
 
-Se evidencia la incorporación del servidor miembro a nexora.test.
+### Paso 2 — SRV01 unido a dominio
+
+**Qué hicimos.** Completamos la unión de SRV01 al bosque nexora.test.
+
+**Por qué.** Un servidor miembro utiliza identidades y políticas centralizadas sin ser controlador de dominio.
+
+**Cómo lo verificamos.** La evidencia muestra el resultado final de la unión.
+
+<details>
+<summary>📷 Ver evidencia — SRV01 unido a dominio</summary>
 
 ![SRV01 unido a dominio](../../screenshots/05-dhcp-servidor-miembro/05-06-srv01-unido-dominio.png)
 
-### 3. Canal seguro
+</details>
 
-Se comprueba el canal de confianza del equipo con AD DS.
+### Paso 3 — Canal seguro
+
+**Qué hicimos.** Ejecutamos Test-ComputerSecureChannel para revisar la confianza con AD.
+
+**Por qué.** Una unión nominal puede no ser suficiente si falla el canal seguro.
+
+**Cómo lo verificamos.** El resultado esperado es True; revisar la captura para el resultado observado.
 
 ![Canal seguro](../../screenshots/05-dhcp-servidor-miembro/05-07-canal-seguro-srv01.png)
 
-### 4. OU de servidores
+### Paso 4 — OU de servidores
 
-SRV01 se organiza en el contenedor de servidores miembros.
+**Qué hicimos.** Movemos el objeto SRV01 a la OU Servidores.
+
+**Por qué.** Esta ubicación permite asignar GPO a servidores miembros sin aplicarlas a DC01.
+
+**Cómo lo verificamos.** Comprobar que SRV01 no se mueve a Domain Controllers.
+
+<details>
+<summary>📷 Ver evidencia — OU de servidores</summary>
 
 ![OU de servidores](../../screenshots/05-dhcp-servidor-miembro/05-08-srv01-ou-servidores.png)
 
-### 5. Selección del rol DHCP
+</details>
 
-Se instala DHCP en SRV01, no en el controlador.
+## Instalación del rol DHCP
+
+### Paso 5 — Selección del rol DHCP
+
+**Qué hicimos.** Seleccionamos el rol DHCP en Server Manager.
+
+**Por qué.** Centralizamos la distribución de direcciones IP para los clientes del laboratorio.
+
+**Cómo lo verificamos.** Distinguir la instalación del rol de su autorización posterior.
+
+<details>
+<summary>📷 Ver evidencia — Selección del rol DHCP</summary>
 
 ![Selección del rol DHCP](../../screenshots/05-dhcp-servidor-miembro/05-09-rol-dhcp-srv01.png)
 
-### 6. Instalación de DHCP
+</details>
 
-Se comprueba el resultado de instalación del servicio.
+### Paso 6 — Instalación de DHCP
+
+**Qué hicimos.** Terminamos el asistente de instalación DHCP.
+
+**Por qué.** El servicio debe estar instalado antes de crear y activar ámbitos.
+
+**Cómo lo verificamos.** Revisar que la instalación informe éxito.
+
+<details>
+<summary>📷 Ver evidencia — Instalación de DHCP</summary>
 
 ![Instalación de DHCP](../../screenshots/05-dhcp-servidor-miembro/05-10-dhcp-instalado.png)
 
-### 7. Servidor DHCP operativo
+</details>
 
-Se presenta la consola de DHCP configurada.
+### Paso 7 — Servidor DHCP operativo
+
+**Qué hicimos.** Abrimos la consola DHCP de SRV01 para administrar IPv4.
+
+**Por qué.** La consola reúne ámbitos, exclusiones, reservas y concesiones.
+
+**Cómo lo verificamos.** Verificar que aparece SRV01 y el nodo IPv4.
+
+<details>
+<summary>📷 Ver evidencia — Servidor DHCP operativo</summary>
 
 ![Servidor DHCP operativo](../../screenshots/05-dhcp-servidor-miembro/05-13-dhcp-srv01-instalado.png)
 
-### 8. Autorización en AD
+</details>
 
-Se autoriza el servidor DHCP para operar en el dominio.
+## Autorización y ámbito IPv4
+
+### Paso 8 — Autorización en AD
+
+**Qué hicimos.** Autorizamos SRV01 como servidor DHCP del dominio en AD.
+
+**Por qué.** La autorización reduce la posibilidad de que servidores Windows no autorizados entreguen configuración.
+
+**Cómo lo verificamos.** No confundir autorización con activar el ámbito.
+
+<details>
+<summary>📷 Ver evidencia — Autorización en AD</summary>
 
 ![Autorización en AD](../../screenshots/05-dhcp-servidor-miembro/05-14-dhcp-autorizado-ad.png)
 
-### 9. Validación de autorización
+</details>
 
-Se comprueba que el servidor aparece entre los DHCP autorizados.
+### Paso 9 — Validación de autorización
+
+**Qué hicimos.** Consultamos la autorización de DHCP desde PowerShell.
+
+**Por qué.** Es una comprobación adicional al asistente gráfico.
+
+**Cómo lo verificamos.** Verificar que la lista contiene SRV01.
 
 ![Validación de autorización](../../screenshots/05-dhcp-servidor-miembro/05-15-verificacion-autorizacion-dhcp.png)
 
-### 10. Ámbito IPv4
+### Paso 10 — Ámbito IPv4
 
-Se define el rango que recibirá Windows 10 y las opciones del cliente.
+**Qué hicimos.** Definimos el ámbito de la subred y las opciones del cliente.
+
+**Por qué.** Los clientes deben recibir IP, DNS 10.20.30.10 y el sufijo nexora.test; sin gateway si no existe router.
+
+**Cómo lo verificamos.** Revisar el rango efectivo en la captura, no asumir el rango previsto.
+
+<details>
+<summary>📷 Ver evidencia — Ámbito IPv4</summary>
 
 ![Ámbito IPv4](../../screenshots/05-dhcp-servidor-miembro/05-16-rango-dhcp.png)
 
-### 11. Validación del ámbito
+</details>
 
-Se comprueba el estado de la configuración IPv4 del servidor DHCP.
+### Paso 11 — Validación del ámbito
+
+**Qué hicimos.** Consultamos el ámbito configurado para comprobar su estado.
+
+**Por qué.** Antes de conectar Windows 10 conviene verificar que hay direcciones disponibles.
+
+**Cómo lo verificamos.** Comprobar que ámbito y opciones son coherentes con 10.20.30.0/24.
 
 ![Validación del ámbito](../../screenshots/05-dhcp-servidor-miembro/05-18-verificacion-ambito-dhcp.png)
+
+---
+
+### Resultado y límites de la fase
+
+**Interpretación:** la captura acredita el paso indicado en el entorno de laboratorio. La validez del servicio completo requiere además las verificaciones descritas en esta fase.
+
+[↑ Volver a la portada](../../README.md) · [Consultar el inventario de evidencias](../evidencias.md)

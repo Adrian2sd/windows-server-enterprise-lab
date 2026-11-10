@@ -25,60 +25,135 @@ Una fase está validada cuando se registra **configuración + comando o procedim
 
 ---
 
-## Guía visual vinculada a las capturas
+## Guía práctica ilustrada
 
-Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+Cada paso combina **acción**, **justificación** y **comprobación**. Las capturas se presentan junto a su explicación: las pruebas de mayor valor quedan visibles y los pasos preparatorios pueden desplegarse al pulsar «Ver captura».
 
-### 1. Validación de AD DS
+## Servicios de directorio y resolución DNS
 
-Se comprueban componentes fundamentales del controlador de dominio.
+### Paso 1 — Validación de AD DS
+
+**Qué hicimos.** Ejecutamos una primera tanda de pruebas de Active Directory.
+
+**Por qué.** Las comprobaciones de servicio permiten detectar fallos no visibles en ADUC.
+
+**Cómo lo verificamos.** Distinguir estado de servicio de salud completa del directorio.
+
+<details>
+<summary>📷 Ver evidencia — Validación de AD DS</summary>
 
 ![Validación de AD DS](../../screenshots/10-validacion/10-01-validacion-ad-parte1.png)
 
-### 2. Validación de AD DS
+</details>
 
-Se comprueban componentes fundamentales del controlador de dominio.
+### Paso 2 — Validación de AD DS
+
+**Qué hicimos.** Completamos la validación de AD DS con una segunda captura.
+
+**Por qué.** Dividir salidas extensas mejora la legibilidad de las pruebas.
+
+**Cómo lo verificamos.** Relacionar ambas capturas con los comandos ejecutados, sin dar por aprobado un test no legible.
 
 ![Validación de AD DS](../../screenshots/10-validacion/10-01-validacion-ad-parte2.png)
 
-### 3. Registro A
+### Paso 3 — Registro A
 
-Se prueba la resolución del nombre del servidor.
+**Qué hicimos.** Consultamos el registro A del controlador de dominio.
+
+**Por qué.** La resolución de nombres de host permite encontrar servidores internos.
+
+**Cómo lo verificamos.** Verificar dirección 10.20.30.10 y servidor DNS utilizado.
+
+<details>
+<summary>📷 Ver evidencia — Registro A</summary>
 
 ![Registro A](../../screenshots/10-validacion/10-02-validacion-registros-a.png)
 
-### 4. Zonas y SRV
+</details>
 
-Se comprueba la resolución de registros usados por AD DS.
+### Paso 4 — Zonas y SRV
+
+**Qué hicimos.** Comprobamos las zonas y los registros SRV de localización de AD.
+
+**Por qué.** Los clientes se apoyan en el registro SRV para descubrir el servicio LDAP.
+
+**Cómo lo verificamos.** Esperado: _ldap._tcp.dc._msdcs.nexora.test → DC01.nexora.test.
 
 ![Zonas y SRV](../../screenshots/10-validacion/10-02-validacion-zonas-srv.png)
 
-### 5. Validación de DHCP
+## DHCP y comportamiento del cliente
 
-Se inspecciona el servicio y el ámbito DHCP.
+### Paso 5 — Validación de DHCP
+
+**Qué hicimos.** Verificamos la configuración y el estado de DHCP.
+
+**Por qué.** La disponibilidad de un ámbito debe complementarse con una concesión real al cliente.
+
+**Cómo lo verificamos.** Comprobar ausencia de DHCP conflictivo en NEXORA-LAN.
 
 ![Validación de DHCP](../../screenshots/10-validacion/10-03-validacion-dhcp.png)
 
-### 6. Validación de bloqueo
+### Paso 6 — Validación de bloqueo
 
-Se comprueba la política de inactividad.
+**Qué hicimos.** Probamos la política de bloqueo después de 600 segundos.
+
+**Por qué.** La configuración administrativa debe demostrar efecto en una sesión de prueba.
+
+**Cómo lo verificamos.** Registrar si se bloquea sin cerrar la sesión.
+
+<details>
+<summary>📷 Ver evidencia — Validación de bloqueo</summary>
 
 ![Validación de bloqueo](../../screenshots/10-validacion/10-04-validacion-bloqueo-600s.png)
 
-### 7. Resultado de políticas de equipo
+</details>
 
-Se inspecciona la aplicación de GPO al equipo.
+## Aplicación de directivas
+
+### Paso 7 — Resultado de políticas de equipo
+
+**Qué hicimos.** Generamos el resultado de políticas de equipo.
+
+**Por qué.** gpresult distingue Computer Settings y User Settings.
+
+**Cómo lo verificamos.** Confirmar el contexto Equipo para la GPO de bloqueo.
+
+<details>
+<summary>📷 Ver evidencia — Resultado de políticas de equipo</summary>
 
 ![Resultado de políticas de equipo](../../screenshots/10-validacion/10-05-gpresult-equipo.png)
 
-### 8. Resultado de políticas de usuario
+</details>
 
-Se inspecciona la aplicación de GPO al usuario.
+### Paso 8 — Resultado de políticas de usuario
+
+**Qué hicimos.** Generamos el resultado de políticas de usuario.
+
+**Por qué.** Las restricciones a Desarrollo solo son relevantes para las cuentas a las que se aplican.
+
+**Cómo lo verificamos.** Confirmar usuario, OU y nombre de GPO.
+
+<details>
+<summary>📷 Ver evidencia — Resultado de políticas de usuario</summary>
 
 ![Resultado de políticas de usuario](../../screenshots/10-validacion/10-05-validacion-gpo-usuario.png)
 
-### 9. Validación final de GPO
+</details>
 
-Se completa la comprobación de política de equipo.
+### Paso 9 — Validación final de GPO
+
+**Qué hicimos.** Finalizamos la revisión de la GPO aplicada al equipo.
+
+**Por qué.** La validación final debe asociar configuración, política recibida y comportamiento.
+
+**Cómo lo verificamos.** Si faltan resultados de NTFS/SMB o DNS, consultar las fases de implementación.
 
 ![Validación final de GPO](../../screenshots/10-validacion/10-06-validacion-gpo-equipo.png)
+
+---
+
+### Resultado y límites de la fase
+
+**Interpretación:** la captura acredita el paso indicado en el entorno de laboratorio. La validez del servicio completo requiere además las verificaciones descritas en esta fase.
+
+[↑ Volver a la portada](../../README.md) · [Consultar el inventario de evidencias](../evidencias.md)

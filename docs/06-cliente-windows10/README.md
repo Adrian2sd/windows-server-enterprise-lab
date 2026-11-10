@@ -28,42 +28,98 @@ El lote de capturas incluye DHCP, resolución DNS, unión al dominio, inicio de 
 
 ---
 
-## Guía visual vinculada a las capturas
+## Guía práctica ilustrada
 
-Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+Cada paso combina **acción**, **justificación** y **comprobación**. Las capturas se presentan junto a su explicación: las pruebas de mayor valor quedan visibles y los pasos preparatorios pueden desplegarse al pulsar «Ver captura».
 
-### 1. Red interna del cliente
+## Conectividad y configuración automática
 
-El adaptador del cliente se asocia al mismo segmento NEXORA-LAN.
+### Paso 1 — Red interna del cliente
+
+**Qué hicimos.** Conectamos el adaptador de WIN10-CL01 a NEXORA-LAN.
+
+**Por qué.** La red interna permite comunicar el cliente con DNS/DHCP sin usar la red física.
+
+**Cómo lo verificamos.** Verificar que coincide exactamente el nombre de red con DC01 y SRV01.
+
+<details>
+<summary>📷 Ver evidencia — Red interna del cliente</summary>
 
 ![Red interna del cliente](../../screenshots/06-windows10-cliente%2A/06-01-win10-red-interna.png)
 
-### 2. Asignación DHCP
+</details>
 
-Se comprueba la dirección dinámica que recibe Windows 10.
+### Paso 2 — Asignación DHCP
+
+**Qué hicimos.** Obtenemos una dirección mediante el DHCP de SRV01 y consultamos ipconfig /all.
+
+**Por qué.** La concesión automática comprueba el servicio DHCP desde el lado del cliente.
+
+**Cómo lo verificamos.** Verificar IP del rango, DNS 10.20.30.10 y ausencia de gateway no previsto.
 
 ![Asignación DHCP](../../screenshots/06-windows10-cliente%2A/06-02-win10-ip-dhcp.png)
 
-### 3. Resolución DNS
+### Paso 3 — Resolución DNS
 
-El cliente consulta el DNS interno para localizar el dominio.
+**Qué hicimos.** Realizamos una consulta DNS desde el cliente.
+
+**Por qué.** AD DS necesita registros de localización; resolver solo una IP no basta para autenticar.
+
+**Cómo lo verificamos.** Comprobar resolución del dominio y, si procede, el registro SRV LDAP.
+
+<details>
+<summary>📷 Ver evidencia — Resolución DNS</summary>
 
 ![Resolución DNS](../../screenshots/06-windows10-cliente%2A/06-03-win10-resolucion-dns.png)
 
-### 4. Unión al dominio
+</details>
 
-Se incorpora Windows 10 Enterprise a nexora.test.
+## Unión y autenticación en Active Directory
+
+### Paso 4 — Unión al dominio
+
+**Qué hicimos.** Unimos WIN10-CL01 a nexora.test y reiniciamos cuando lo solicita Windows.
+
+**Por qué.** La unión crea una cuenta de equipo en el directorio y establece confianza.
+
+**Cómo lo verificamos.** Confirmar que el equipo reconoce el dominio al volver a iniciar.
+
+<details>
+<summary>📷 Ver evidencia — Unión al dominio</summary>
 
 ![Unión al dominio](../../screenshots/06-windows10-cliente%2A/06-04-win10-unido-dominio.png)
 
-### 5. Inicio de sesión corporativo
+</details>
 
-Se utiliza la cuenta ficticia ana.garcia en el cliente.
+### Paso 5 — Inicio de sesión corporativo
+
+**Qué hicimos.** Iniciamos sesión con la identidad ficticia ana.garcia.
+
+**Por qué.** La autenticación de un usuario de dominio es una prueba funcional desde el cliente.
+
+**Cómo lo verificamos.** Distinguir el usuario de dominio de una cuenta local.
 
 ![Inicio de sesión corporativo](../../screenshots/06-windows10-cliente%2A/06-05-inicio-sesion-ana-garcia.png)
 
-### 6. OU Estaciones
+### Paso 6 — OU Estaciones
 
-Se organiza el objeto de equipo en la OU correspondiente.
+**Qué hicimos.** Colocamos el objeto WIN10-CL01 en la OU Estaciones.
+
+**Por qué.** Las GPO dirigidas a esa OU se aplicarán según vínculos y filtros configurados.
+
+**Cómo lo verificamos.** Confirmar el objeto en ADUC y después usar gpresult.
+
+<details>
+<summary>📷 Ver evidencia — OU Estaciones</summary>
 
 ![OU Estaciones](../../screenshots/06-windows10-cliente%2A/06-06-win10-ou-estaciones.png)
+
+</details>
+
+---
+
+### Resultado y límites de la fase
+
+**Interpretación:** la captura acredita el paso indicado en el entorno de laboratorio. La validez del servicio completo requiere además las verificaciones descritas en esta fase.
+
+[↑ Volver a la portada](../../README.md) · [Consultar el inventario de evidencias](../evidencias.md)

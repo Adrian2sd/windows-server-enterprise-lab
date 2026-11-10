@@ -1,67 +1,120 @@
-# Windows Server Enterprise Lab
+# 🖥️ Windows Server Enterprise Lab
 
-**Portfolio ASIR · Administración de sistemas Windows · Laboratorio virtual aislado**
+**Diseño y administración de una infraestructura Windows para una empresa ficticia.**
 
-Proyecto práctico para diseñar, desplegar, administrar y validar la infraestructura informática de **Nexora Solutions**, una empresa ficticia de servicios tecnológicos. El escenario representa cinco departamentos y 60 empleados; el laboratorio utiliza un número reducido de máquinas virtuales para reproducir sus servicios de infraestructura.
+![Windows Server 2016](https://img.shields.io/badge/Windows%20Server-2016-0078D4?style=flat-square) ![Active Directory](https://img.shields.io/badge/Active%20Directory-AD%20DS-0B6AA2?style=flat-square) ![PowerShell](https://img.shields.io/badge/PowerShell-Automatización-2671BE?style=flat-square) ![VirtualBox](https://img.shields.io/badge/VirtualBox-Laboratorio%20aislado-183A61?style=flat-square)
 
-> **Estado del repositorio:** documentación publicada, 101 capturas PNG incorporadas y enlazadas desde las guías de fase, y scripts de ejemplo identificados como tales. Este README diferencia las pruebas documentadas de las ampliaciones previstas. Sistemas heredados para fines educativos; no es una arquitectura recomendada para producción.
+**[Explorar las fases](#documentación-paso-a-paso)** · **[Ver arquitectura](#arquitectura-del-laboratorio)** · **[Analizar incidencias](#diagnóstico-y-resolución-de-incidencias)** · **[Consultar scripts](scripts/powershell/README.md)**
 
-## Arquitectura
+> 📌 **Proyecto de portfolio ASIR.** Un laboratorio educativo virtualizado: no una infraestructura real ni una arquitectura recomendada para producción. El proyecto está documentado con capturas verificables y con las limitaciones técnicas señaladas expresamente.
 
-| Máquina | Sistema | Rol | Red |
-|---|---|---|---|
-| `DC01` | Windows Server 2016 | Active Directory Domain Services y DNS | `10.20.30.10/24` |
-| `SRV01` | Windows Server 2016 | DHCP y servidor de archivos | `10.20.30.20/24` |
-| `WIN10-CL01` | Windows 10 Enterprise | Cliente de pruebas y aplicación de GPO | DHCP |
+## 🎯 Qué he construido
 
-**Dominio** `nexora.test` · **NetBIOS** `NEXORA` · **VirtualBox** `NEXORA-LAN` (red interna).
+**Nexora Solutions** es una empresa ficticia de 60 empleados distribuidos entre Dirección, Recursos Humanos, Finanzas, Desarrollo y Soporte IT. He diseñado un laboratorio para reproducir servicios centrales de TI y ejercitar tareas de un administrador de sistemas.
 
-[Diagrama de arquitectura](diagrams/arquitectura.md) · [Diseño empresarial](docs/01-diseno/README.md) · [Inventario de evidencias](docs/evidencias.md)
-
-## Implementación por fases
-
-| Fase | Objetivo | Documentación |
-|---|---|---|
-| 02 | Instalar VM, configurar IP y probar conectividad | [Virtualización y red](docs/02-virtualizacion-red/README.md) |
-| 03 | Desplegar AD DS, DNS y validar registros SRV | [Active Directory y DNS](docs/03-active-directory-dns/README.md) |
-| 04 | Crear OU, usuarios y grupos | [Estructura empresarial](docs/04-ou-usuarios-grupos/README.md) |
-| 05 | Unir SRV01 al dominio y configurar DHCP | [Servidor miembro y DHCP](docs/05-servidor-miembro-dhcp/README.md) |
-| 06 | Incorporar Windows 10 Enterprise | [Cliente Windows 10](docs/06-cliente-windows10/README.md) |
-| 07 | Aplicar y comprobar GPO de usuario y equipo | [GPO](docs/07-gpo/README.md) |
-| 08 | Aplicar AGDLP y verificar permisos NTFS/SMB | [Archivos y permisos](docs/08-recursos-ntfs-smb/README.md) |
-| 09 | Simular altas, cambios y bajas | [PowerShell](docs/09-powershell-operaciones/README.md) |
-| 10 | Revisar resultados e incidencias | [Validación](docs/10-validacion/README.md) |
-
-## Pruebas destacadas
-
-- Comunicación IP bidireccional entre DC01 y SRV01 tras configurar reglas ICMP específicas sin desactivar el firewall.
-- Zonas DNS `nexora.test` y `_msdcs.nexora.test` integradas en AD; respuesta SRV `_ldap._tcp.dc._msdcs.nexora.test` hacia `DC01.nexora.test`.
-- Evidencias clasificadas de servidor DHCP autorizado, unión de cliente Windows 10, GPO de bloqueo de sesión a 600 segundos y restricciones a usuarios de Desarrollo.
-- Casos documentados de permisos permitidos y denegados entre carpetas departamentales.
-
-Los procedimientos incluyen comandos de verificación y capturas insertadas en el paso que documentan. **Las evidencias por pantalla no sustituyen las pruebas funcionales**.
-
-## Incidencias y recuperación
-
-| Caso | Resumen |
+| Área de trabajo | Evidencia del proyecto |
 |---|---|
-| [001 — ICMP entre servidores](docs/troubleshooting/001-icmp-firewall.md) | El ping fallaba por las reglas del firewall; se permitió ICMPv4 para la subred interna |
-| [002 — Zonas DNS del primer bosque](docs/troubleshooting/002-dns-zonas.md) | Errores de creación WIN32 123, diagnóstico y recuperación desde instantánea |
-| [003 — Incorporación de SRV01](docs/troubleshooting/003-union-srv01.md) | Evidencia de error SID y posterior unión; causa exacta pendiente de documentar |
+| **Identidad corporativa** | Dominio `nexora.test`, controlador `DC01`, OU, grupos y cuentas |
+| **Servicios de red** | DNS integrado en AD DS, DHCP en `SRV01` y cliente Windows 10 |
+| **Administración centralizada** | Directivas GPO de equipo y usuario y pruebas con `gpresult` |
+| **Control de acceso** | Carpetas compartidas SMB, permisos NTFS y modelo AGDLP |
+| **Automatización** | Casos de alta, traslado y baja lógica mediante PowerShell |
+| **Diagnóstico** | Incidencias de ICMP, DNS y unión al dominio documentadas |
 
-La primera promoción con `ad.nexora.example` no generó correctamente las zonas DNS. El entorno se recuperó a una instantánea pre-AD DS y se creó `nexora.test`. **No se ha demostrado la causa raíz del error original**.
+Las guías muestran qué se configuró, **por qué**, cómo se comprobó y la captura de cada paso. Los scripts publicados son ejemplos didácticos identificados como tales; los originales solo se conservan en las capturas disponibles.
 
-## Scripts
+## 🗺️ Arquitectura del laboratorio
 
-Los archivos en [`scripts/powershell/`](scripts/powershell/README.md) incluyen **plantillas didácticas**, identificadas explícitamente como ejemplos, para alta y baja lógica. Las capturas de automatizaciones originales no equivalen a disponer de los scripts originales `.ps1`.
+```mermaid
+flowchart TB
+  L["Red interna VirtualBox<br/>NEXORA-LAN · 10.20.30.0/24"]
+  DC["DC01 · Windows Server 2016<br/>AD DS + DNS<br/>10.20.30.10"]
+  SRV["SRV01 · Windows Server 2016<br/>DHCP + servidor de archivos<br/>10.20.30.20"]
+  PC["WIN10-CL01 · Windows 10 Enterprise<br/>Cliente de dominio · DHCP"]
+  L --- DC
+  L --- SRV
+  L --- PC
+  DC -. "Identidades, DNS y GPO" .-> PC
+  SRV -. "Direcciones IP y archivos SMB" .-> PC
+```
 
-## Seguridad y límites
+| Parámetro | Valor |
+|---|---|
+| Dominio DNS | `nexora.test` |
+| NetBIOS | `NEXORA` |
+| Red del laboratorio | `10.20.30.0/24` |
+| Tipo de red | Interna, aislada de la LAN física |
+| Controladores de dominio | Uno; **sin alta disponibilidad** |
 
-- Laboratorio aislado de redes reales mediante red interna de VirtualBox.
-- No publicar credenciales, claves privadas, discos de VM, ISOs ni datos de personas.
-- Solo hay un controlador de dominio: **no existe alta disponibilidad**.
-- Windows Server 2016 y Windows 10 Enterprise convencional son plataformas heredadas; las prácticas son educativas y no deben trasladarse sin rediseño a una empresa real.
+[Ver las decisiones de diseño](docs/01-diseno/README.md) · [Ver el esquema independiente](diagrams/arquitectura.md)
 
-## Alcance de la documentación
+## 📚 Documentación paso a paso
 
-Las 101 capturas originales están publicadas en `screenshots/`. Las guías de cada fase incluyen una secuencia visual contextualizada. Las 14 imágenes de incidencias se consultan desde sus respectivos informes. Los scripts `.ps1` son ejemplos didácticos, no transcripciones de los ejecutados originalmente.
+| Fase | Contenido | Guía ilustrada |
+|:---:|---|---|
+| **01** | Contexto empresarial, requisitos y arquitectura | [Diseño inicial](docs/01-diseno/README.md) |
+| **02** | Máquinas virtuales, IP, firewall y conectividad | [Virtualización y red](docs/02-virtualizacion-red/README.md) |
+| **03** | Controlador de dominio y registros DNS | [Active Directory y DNS](docs/03-active-directory-dns/README.md) |
+| **04** | Estructura de OU, usuarios y grupos de seguridad | [Organización del directorio](docs/04-ou-usuarios-grupos/README.md) |
+| **05** | Servidor miembro, autorización y ámbito DHCP | [Servidor y DHCP](docs/05-servidor-miembro-dhcp/README.md) |
+| **06** | IP dinámica, unión al dominio y autenticación | [Windows 10 Enterprise](docs/06-cliente-windows10/README.md) |
+| **07** | Configuración y verificación de GPO | [Políticas de grupo](docs/07-gpo/README.md) |
+| **08** | Grupos AGDLP, permisos NTFS y SMB, pruebas de acceso | [Control de acceso](docs/08-recursos-ntfs-smb/README.md) |
+| **09** | Ciclo de vida de usuarios con PowerShell | [Automatización](docs/09-powershell-operaciones/README.md) |
+| **10** | Comprobaciones finales de servicios | [Validación técnica](docs/10-validacion/README.md) |
+
+**101 capturas** clasificadas en `screenshots/`: 87 asociadas a las fases y 14 a incidencias. [Inventario y criterios de evidencia](docs/evidencias.md).
+
+### 🔍 Tres pruebas representativas
+
+**DNS integrado en Active Directory:** las zonas `nexora.test` y `_msdcs.nexora.test` aparecen integradas en AD y una consulta SRV identifica `DC01.nexora.test`.
+
+![Validación DNS integrada](screenshots/03-active-directory-dns/03-35-dns-zonas-srv-funcionando.png)
+
+**Control de acceso por departamento:** el laboratorio incluye pruebas de acceso permitido a Desarrollo y denegado a Finanzas desde una cuenta no autorizada.
+
+<details>
+<summary>📷 Ver prueba de acceso denegado</summary>
+
+![Acceso denegado a Finanzas](screenshots/08-permisos-ntfs-smb/08-13-acceso-finanzas-denegado.png)
+
+</details>
+
+**Políticas corporativas:** se configuró una directiva de bloqueo por inactividad de 600 segundos y se comprobó su efecto en Windows 10.
+
+<details>
+<summary>📷 Ver comprobación de GPO</summary>
+
+![Verificación bloqueo de sesión](screenshots/07-gpo/07-04-verificacion-bloqueo-sesion.png)
+
+</details>
+
+## 🧰 Diagnóstico y resolución de incidencias
+
+Un administrador no solo instala servicios: también necesita diagnosticar fallos, justificar cambios y comprobar que se recuperó la funcionalidad.
+
+| Incidencia | Síntoma y aprendizaje |
+|---|---|
+| [001 · ICMP](docs/troubleshooting/001-icmp-firewall.md) | Ping bloqueado; regla específica en firewall sin deshabilitar la protección |
+| [002 · DNS](docs/troubleshooting/002-dns-zonas.md) | Ausencia de zonas y error WIN32 123; recuperación desde instantánea y validación posterior |
+| [003 · SID/servidor miembro](docs/troubleshooting/003-union-srv01.md) | Error de unión de SRV01; evidencia de recuperación con causa raíz no demostrada |
+
+La promoción inicial usó `ad.nexora.example` y falló la creación de zonas DNS. Se recuperó una instantánea anterior a AD DS y se creó el bosque definitivo `nexora.test`. **La causa exacta del error inicial no pudo acreditarse**, por lo que no se atribuye a un sufijo DNS concreto.
+
+## ⚙️ Automatización y habilidades
+
+El repositorio incluye [ejemplos de alta, cambio de departamento y baja lógica](scripts/powershell/README.md), además de comprobaciones con `Get-ADUser`, `Get-DnsServerZone`, `Test-ComputerSecureChannel`, `gpresult` y herramientas DHCP.
+
+**Competencias demostradas:** virtualización, direccionamiento IPv4, AD DS, DNS, DHCP, GPO, autorización NTFS/SMB, diseño de OU y grupos, PowerShell, pruebas técnicas, recuperación y documentación de incidencias.
+
+## 🔒 Seguridad, contexto y limitaciones
+
+- Entorno educativo aislado mediante VirtualBox, sin servicios publicados en Internet.
+- Se utilizan usuarios y departamentos ficticios. No se incluyen contraseñas, discos virtuales ni claves privadas.
+- Un solo DC no proporciona redundancia; tampoco se ha implementado alta disponibilidad.
+- Windows Server 2016 y Windows 10 Enterprise convencional son tecnologías heredadas. No se propone replicar este diseño en un entorno productivo.
+- Las capturas documentan lo observado, pero no sustituyen auditorías o pruebas repetidas en un sistema vivo.
+
+---
+
+**[Empezar por el diseño](docs/01-diseno/README.md) · [Ir a la primera fase práctica](docs/02-virtualizacion-red/README.md) · [Ver evidencias](docs/evidencias.md)**
