@@ -1,21 +1,82 @@
-# Fase 02 — Virtualización y red
+# Fase 02 — Virtualización y red aislada
 
 ## Objetivo
 
-Montar una infraestructura aislada en Oracle VirtualBox sobre un anfitrión Windows 11, sin interferir con la red física.
+Crear la infraestructura base de **Nexora Solutions** en Oracle VirtualBox sobre un equipo Windows 11, asegurando conectividad entre servidores sin exponer los servicios del laboratorio a la red doméstica.
 
-## Diseño
+## Arquitectura y direccionamiento
 
-- Red interna VirtualBox: `NEXORA-LAN` (`10.20.30.0/24`).
-- `DC01`: Windows Server 2016, IP `10.20.30.10`, DNS previsto `10.20.30.10`.
-- `SRV01`: Windows Server 2016, IP `10.20.30.20`, DNS `10.20.30.10`.
-- Sin puerta de enlace para las interfaces internas.
-- Adaptadores adicionales deshabilitados durante las pruebas de aislamiento.
+| Parámetro | DC01 | SRV01 |
+|---|---|---|
+| Sistema operativo | Windows Server 2016 Standard Evaluation | Windows Server 2016 Standard Evaluation |
+| RAM | 4 GB | 4 GB |
+| vCPU | 2 | 2 |
+| Disco virtual | 50 GB VDI dinámico | 50 GB VDI dinámico |
+| IP | `10.20.30.10` | `10.20.30.20` |
+| Máscara | `255.255.255.0` | `255.255.255.0` |
+| Puerta de enlace | Sin configurar | Sin configurar |
+| DNS interno | `10.20.30.10` | `10.20.30.10` |
 
-## Pruebas registradas
+**Configuración de VirtualBox:** adaptador 1 en modalidad **Red interna**, nombre exacto `NEXORA-LAN`, sin adaptadores adicionales activos durante las pruebas de aislamiento.
 
-Se verificó el direccionamiento con `hostname` e `ipconfig /all`. Las primeras pruebas `Test-NetConnection` entre los servidores fallaron por ICMP. Se añadieron reglas limitadas al rango `10.20.30.0/24`, manteniendo el firewall activo. Las pruebas posteriores mostraron `PingSucceeded: True` en ambos sentidos.
+## Procedimiento
 
-## Evidencia pendiente
+1. Crear las máquinas `DC01` y `SRV01` con discos VDI de crecimiento dinámico.
+2. Instalar Windows Server 2016 con *Desktop Experience*.
+3. Configurar el nombre de cada servidor y asignar IP estática.
+4. Comprobar la dirección y el nombre con `hostname` e `ipconfig /all`.
+5. Probar conectividad en ambos sentidos con `Test-NetConnection`.
+6. Ante los primeros fallos ICMP, mantener activo el firewall y añadir una regla de entrada para solicitudes echo IPv4 **limitada a `10.20.30.0/24`**.
+7. Repetir ambas pruebas y verificar `PingSucceeded: True`.
+8. Comprobar rutas IPv4 con `route print -4` y guardar instantáneas base de las máquinas.
 
-Vincular capturas de la configuración de VirtualBox, direcciones IP y pruebas de conectividad. Añadir comprobación de rutas `route print -4` cuando se revise la selección final.
+## Pruebas y resultados
+
+| Prueba | Comando | Evidencia observada |
+|---|---|---|
+| Identidad del servidor | `hostname` | `DC01` y `SRV01` |
+| Direccionamiento estático | `ipconfig /all` | `10.20.30.10/24` y `10.20.30.20/24`, DHCP deshabilitado en ambos servidores |
+| Conectividad inicial | `Test-NetConnection <IP-del-otro-servidor>` | `PingSucceeded: False` |
+| Conectividad tras ajuste del firewall | Mismo comando en ambos sentidos | `PingSucceeded: True` |
+| Rutas locales | `route print -4` | Captura de comprobación disponible; revisar contenido antes de afirmar aislamiento completo |
+
+> **Alcance de la prueba:** el ping bidireccional demuestra conectividad entre máquinas virtuales, pero por sí solo no certifica el aislamiento externo. Para ello deben comprobarse también la modalidad Red interna y las rutas del equipo.
+
+## Incidencia 001 — ICMP bloqueado
+
+**Síntoma:** ambos servidores tenían las IP correctas, pero `Test-NetConnection` devolvía `PingSucceeded: False`.
+
+**Intervención:** se creó en cada servidor una regla de firewall de entrada, protocolo ICMPv4 y tipo echo request (8), permitiendo solo orígenes de la subred `10.20.30.0/24`. No se desactivó globalmente Windows Firewall.
+
+```powershell
+New-NetFirewallRule `
+  -DisplayName "LAB - Permitir ICMPv4 Nexora" `
+  -Direction Inbound `
+  -Protocol ICMPv4 `
+  -IcmpType 8 `
+  -RemoteAddress 10.20.30.0/24 `
+  -Action Allow `
+  -Profile Any
+```
+
+**Resultado:** la comunicación entre `DC01` y `SRV01` funcionó en ambos sentidos.
+
+## Evidencias seleccionadas
+
+Se han separado seis capturas para publicar en `screenshots/02-virtualizacion-red/`. **Aún no están adjuntadas en el repositorio**; los enlaces se incorporarán cuando se carguen los PNG.
+
+| Nombre de archivo | Qué acredita |
+|---|---|
+| `02-03-dc01-windows-server-instalado.png` | Instalación y Server Manager de DC01 |
+| `02-04-dc01-ip-estatica.png` | Dirección fija y DNS en DC01 |
+| `02-06-srv01-ip-estatica.png` | Dirección fija y DNS en SRV01 |
+| `02-08-regla-firewall-icmp.png` | Ajuste limitado de ICMP en ambos servidores |
+| `02-09-conectividad-dc01-srv01.png` | Ping bidireccional correcto |
+| `02-10-rutas-red-interna.png` | Comprobación de rutas IPv4 |
+
+## Aprendizajes
+
+- Diferencia entre configuración IP y conectividad efectiva.
+- Aislamiento por topología de red virtual y ausencia de salida directa.
+- Diagnóstico de tráfico ICMP bloqueado sin apagar el firewall.
+- Importancia de conservar evidencias del fallo y de la solución.
