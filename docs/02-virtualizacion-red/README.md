@@ -63,7 +63,7 @@ New-NetFirewallRule `
 
 ## Evidencias seleccionadas
 
-Se han separado seis capturas para publicar en `screenshots/02-virtualizacion-red/`. **Aún no están adjuntadas en el repositorio**; los enlaces se incorporarán cuando se carguen los PNG.
+Las ocho capturas de la fase están publicadas en `screenshots/02-virtualizacion-red/` y aparecen integradas más abajo en esta guía, en el paso que documentan.
 
 | Nombre de archivo | Qué acredita |
 |---|---|
@@ -73,6 +73,8 @@ Se han separado seis capturas para publicar en `screenshots/02-virtualizacion-re
 | `02-08-regla-firewall-icmp.png` | Ajuste limitado de ICMP en ambos servidores |
 | `02-09-conectividad-dc01-srv01.png` | Ping bidireccional correcto |
 | `02-10-rutas-red-interna.png` | Comprobación de rutas IPv4 |
+| `02-05-srv01-instalado.png` | Instalación de SRV01 |
+| `02-11-srv01-snapshot.png` | Instantánea de seguridad de SRV01 |
 
 ## Aprendizajes
 
