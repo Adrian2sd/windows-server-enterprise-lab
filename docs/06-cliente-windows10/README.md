@@ -45,7 +45,7 @@ Cada paso combina **acción**, **justificación** y **comprobación**. Las captu
 <details>
 <summary>📷 Ver evidencia — Red interna del cliente</summary>
 
-![Red interna del cliente](../../screenshots/06-windows10-cliente%2A/06-01-win10-red-interna.png)
+![Red interna del cliente](../../screenshots/06-windows10-cliente/06-01-win10-red-interna.png)
 
 </details>
 
@@ -57,7 +57,7 @@ Cada paso combina **acción**, **justificación** y **comprobación**. Las captu
 
 **Cómo lo verificamos.** Verificar IP del rango, DNS 10.20.30.10 y ausencia de gateway no previsto.
 
-![Asignación DHCP](../../screenshots/06-windows10-cliente%2A/06-02-win10-ip-dhcp.png)
+![Asignación DHCP](../../screenshots/06-windows10-cliente/06-02-win10-ip-dhcp.png)
 
 ### Paso 3 — Resolución DNS
 
@@ -70,7 +70,7 @@ Cada paso combina **acción**, **justificación** y **comprobación**. Las captu
 <details>
 <summary>📷 Ver evidencia — Resolución DNS</summary>
 
-![Resolución DNS](../../screenshots/06-windows10-cliente%2A/06-03-win10-resolucion-dns.png)
+![Resolución DNS](../../screenshots/06-windows10-cliente/06-03-win10-resolucion-dns.png)
 
 </details>
 
@@ -87,7 +87,7 @@ Cada paso combina **acción**, **justificación** y **comprobación**. Las captu
 <details>
 <summary>📷 Ver evidencia — Unión al dominio</summary>
 
-![Unión al dominio](../../screenshots/06-windows10-cliente%2A/06-04-win10-unido-dominio.png)
+![Unión al dominio](../../screenshots/06-windows10-cliente/06-04-win10-unido-dominio.png)
 
 </details>
 
@@ -99,7 +99,7 @@ Cada paso combina **acción**, **justificación** y **comprobación**. Las captu
 
 **Cómo lo verificamos.** Distinguir el usuario de dominio de una cuenta local.
 
-![Inicio de sesión corporativo](../../screenshots/06-windows10-cliente%2A/06-05-inicio-sesion-ana-garcia.png)
+![Inicio de sesión corporativo](../../screenshots/06-windows10-cliente/06-05-inicio-sesion-ana-garcia.png)
 
 ### Paso 6 — OU Estaciones
 
@@ -112,7 +112,7 @@ Cada paso combina **acción**, **justificación** y **comprobación**. Las captu
 <details>
 <summary>📷 Ver evidencia — OU Estaciones</summary>
 
-![OU Estaciones](../../screenshots/06-windows10-cliente%2A/06-06-win10-ou-estaciones.png)
+![OU Estaciones](../../screenshots/06-windows10-cliente/06-06-win10-ou-estaciones.png)
 
 </details>
 
