@@ -11,3 +11,9 @@ Test-ComputerSecureChannel
 ```
 
 Para completar esta incidencia: transcribir el error observado, detallar acciones reales realizadas y comprobar `True` en el resultado, junto con la ubicación de SRV01 en AD.
+
+## Evidencias visuales de la incidencia
+
+### 1. error sid srv01
+
+![05-05-error-sid-srv01](../../screenshots/troubleshooting/05-05-error-sid-srv01.png)
