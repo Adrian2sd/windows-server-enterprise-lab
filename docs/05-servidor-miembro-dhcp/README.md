@@ -40,3 +40,75 @@ La autorización DHCP en Active Directory evita que un servidor DHCP Windows no 
 ## Incidencia
 
 Existe evidencia de un error SID durante la unión de SRV01 y de su posterior incorporación correcta. Se documenta como incidencia diferenciada en [troubleshooting](../troubleshooting/003-union-srv01.md).
+
+---
+
+## Guía visual vinculada a las capturas
+
+Esta secuencia relaciona los pasos y decisiones técnicas de la fase con la evidencia obtenida. Las capturas son registros del laboratorio, no instrucciones para copiar configuraciones sin entenderlas.
+
+### 1. Resolución DNS del servidor miembro
+
+Antes de unir SRV01, se comprueba que localiza los servicios del dominio.
+
+![Resolución DNS del servidor miembro](../../screenshots/05-dhcp-servidor-miembro/05-01-srv01-resolucion-dns.png)
+
+### 2. SRV01 unido a dominio
+
+Se evidencia la incorporación del servidor miembro a nexora.test.
+
+![SRV01 unido a dominio](../../screenshots/05-dhcp-servidor-miembro/05-06-srv01-unido-dominio.png)
+
+### 3. Canal seguro
+
+Se comprueba el canal de confianza del equipo con AD DS.
+
+![Canal seguro](../../screenshots/05-dhcp-servidor-miembro/05-07-canal-seguro-srv01.png)
+
+### 4. OU de servidores
+
+SRV01 se organiza en el contenedor de servidores miembros.
+
+![OU de servidores](../../screenshots/05-dhcp-servidor-miembro/05-08-srv01-ou-servidores.png)
+
+### 5. Selección del rol DHCP
+
+Se instala DHCP en SRV01, no en el controlador.
+
+![Selección del rol DHCP](../../screenshots/05-dhcp-servidor-miembro/05-09-rol-dhcp-srv01.png)
+
+### 6. Instalación de DHCP
+
+Se comprueba el resultado de instalación del servicio.
+
+![Instalación de DHCP](../../screenshots/05-dhcp-servidor-miembro/05-10-dhcp-instalado.png)
+
+### 7. Servidor DHCP operativo
+
+Se presenta la consola de DHCP configurada.
+
+![Servidor DHCP operativo](../../screenshots/05-dhcp-servidor-miembro/05-13-dhcp-srv01-instalado.png)
+
+### 8. Autorización en AD
+
+Se autoriza el servidor DHCP para operar en el dominio.
+
+![Autorización en AD](../../screenshots/05-dhcp-servidor-miembro/05-14-dhcp-autorizado-ad.png)
+
+### 9. Validación de autorización
+
+Se comprueba que el servidor aparece entre los DHCP autorizados.
+
+![Validación de autorización](../../screenshots/05-dhcp-servidor-miembro/05-15-verificacion-autorizacion-dhcp.png)
+
+### 10. Ámbito IPv4
+
+Se define el rango que recibirá Windows 10 y las opciones del cliente.
+
+![Ámbito IPv4](../../screenshots/05-dhcp-servidor-miembro/05-16-rango-dhcp.png)
+
+### 11. Validación del ámbito
+
+Se comprueba el estado de la configuración IPv4 del servidor DHCP.
+
+![Validación del ámbito](../../screenshots/05-dhcp-servidor-miembro/05-18-verificacion-ambito-dhcp.png)
